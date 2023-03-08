@@ -1,0 +1,386 @@
+Домашнее задание 1
+Спроектировать API для Яндекс Такси (REST / gRPC / со звездочкой GraphQL)
+REST лучше использовать во внешнем взаимодействии между клиентом и сервисами
+
+Авторизация
+Request:
+{
+     Get /login
+     {
+           “Authorization” : “Basic c3Rhcy5hZ2FsdHN”
+     }
+}
+
+Response:
+{
+     200, 400, 401, 500
+     Cookie:
+     {
+         “accesstoken” :
+         {
+               “comment” : “jwt”
+               “domain” : “”
+               “httpOnly” : false
+               “maxAge” : 1678302907
+               “name” : “accesstoken”
+               “path” : “/”
+               “sameSite” : Lax
+               “secure” : true
+               “value” : “f45f43f.344ff.56g6yh”
+               “version” : 1
+         }
+     }
+}
+
+При каждом запросе/входе отправляется в cookie jwt и обновляется каждые 15 мин, который хранит в себе
+
+Jsonwebtoken:
+{
+     “id” : 0
+     “username” : “stas”
+     “role” : “user”
+     “iat” : 
+     “exp” : 
+}
+
+1) посмотреть профиль водителя и клиента
+Request:
+{
+     Get /personaldata
+     {
+           “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+     }
+}
+
+Response:
+{
+     200, 400, 403, 500
+     {
+           “id” : “0”
+           “username” : “stas”
+           “role” : “user”
+           “phone” : 9032697963
+           “mail” : “agaltsev.stas@mail.ru”
+           “rating” : “5”
+     }
+     Cookie:
+     {
+          “accesstoken” : 
+          {    
+                “comment” : “jwt”
+                “domain” : “”
+                “httpOnly” : false
+                “maxAge” : 1678302907
+                “name” : “accesstoken”
+                “value” : “f45f43f.344ff.56g6yh”
+                …
+          }
+     }
+}
+
+2) изменить свои данные
+Request:
+{
+     Patch /personaldata
+     {
+          “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+          “username” : “stasOK”
+          “password” : “qwerty”
+          “timestamp” : 1676302907
+     }
+}
+
+Response:
+{
+     200, 400, 401, 403, 500
+     Cookie:
+     {
+          “accesstoken” : 
+          {    
+                “comment” : “jwt”
+                “domain” : “”
+                “httpOnly” : false
+                “maxAge” : 1678302907
+                “name” : “accesstoken”
+                “value” : “f45f43f.344ff.56g6yh”
+                …
+          }
+     }
+}
+
+
+3) рассчитать время и стоимость маршрута (со звездочкой еще и разные тарифы)
+Request:
+{
+     Get /route
+     {
+           “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+           “location” : 
+           {
+                “latitude” : 55.7504461 // широта
+                “longitude” : 37.6174943 // долгота
+                “height” : 155 // высота
+           }
+           “destination” : 
+           {
+                “latitude” : 59.938732
+                “longitude” : 30.316229
+                “height” : 14
+           }
+           “timestamp” : …
+     }
+}
+
+Response:
+{
+     200, 400, 500
+     {
+           “id” : 12345 // id маршрута¬
+           “taxi” :
+           [
+                “economy” : 
+                {
+                      “amount” : “545” // рубли
+                      “time” : 601 // время в секундах
+                 },
+                 “business” : 
+                {
+                      “amount” : “545” // рубли
+                      “time” : 601 // время в секундах
+                 }
+                 …
+           ]
+      }
+      Cookie:
+      {
+          “accesstoken” : 
+          {    
+               “comment” : “jwt”
+               “domain” : “”
+                “httpOnly” : false
+                “maxAge” : 1678302907
+                “name” : “accesstoken”
+                “value” : “f45f43f.344ff.56g6yh”
+                …
+          }
+     }
+}
+
+
+4) сделать заказ такси по выбранному маршруту (со звездочкой еще и разные пути)
+После сформированного маршрута появилась кнопочка «заказать»
+Request:
+{
+     Post /route/12345
+     {
+           “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+           “taxi” : “economy”
+           “bankcard” : 454535
+           “payment” : “cashless” // безналичный
+           “timestamp” : 1676302907
+     }
+}
+
+Response:
+{
+     200, 400, 500
+     {
+           “id” : 54321 // id поездки
+           “averagewaitingtime” : 180 // среднее время ожидания в секундах
+           “amount” : “545” // рубли, потому что за время нажатия сумма могла обновиться
+           “time” : 150 // время в секундах, потому что время могло обновиться
+           “driver” : // может не сразу найти водителя
+           {
+               “id” : …
+                “photo” : “…”
+                “name” : ashot
+                “numberCar” : ао365
+                “phone” : 89156458900 
+                “description” “white kia rio, …”
+                “rating” : “5”
+                “location” : 
+                {
+                      “latitude” : 55.7504461 // широта
+                      “longitude” : 37.6174943 // долгота
+                      “height” : 155 // высота
+                 }
+            }
+      }
+      Cookie:
+     {
+          “accesstoken” : 
+          {    
+               “comment” : “jwt”
+               “domain” : “”
+               “httpOnly” : false
+               “maxAge” : 1678302907
+               “name” : “accesstoken”
+               “value” : “f45f43f.344ff.56g6yh”
+               …
+          }
+     }
+}
+
+5) оставить отзыв о поездке
+Request:
+{
+     Post /trip/54321/comment
+     {
+           “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+           “text” : “…”
+           “timestamp” : 1676302907
+     }
+}
+
+Response:
+{
+     200, 400, 401, 500
+     Cookie:
+     {
+          “accesstoken” : 
+          {    
+                “comment” : “jwt”
+                “domain” : “”
+                “httpOnly” : false
+                “maxAge” : 1678302907
+                “name” : “accesstoken”
+                “value” : “f45f43f.344ff.56g6yh”
+                …
+          }
+     }
+}
+
+6) посмотреть историю поездок
+Request:
+{
+     Get /trips/history
+     {
+           “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+     }
+}
+
+Response:
+{
+     200, 400, 401, 500
+     {
+          “trips” :
+          [
+               {
+                     “id” : 54321
+                     “amount” : 564
+                     “bankcard” : 5555444433332222
+                     “time” : 350
+                     “location” : 
+                     {
+                           “Country” : “Russia”
+                           “city” : “Moscow”
+                           “street” : “Nikolskaya”
+                           “house” : 1
+                           “building” : 0
+                           “entrance” : 1
+                      }
+                      “destination” : 
+                      {
+                           “Country” : “Russia”
+                           “city” : “Moscow”
+                           “street” : “Nikolskaya”
+                           “house” : 10
+                           “building” : 1
+                           “entrance” : 2
+                       }
+                       “driver” :
+                       {
+                             “photo” : “…”
+                             “name” : ashot
+                             “numberCar” : ао365
+                             “phone” : 89156458900 
+                             “description” “white kia rio, …”
+                             “rating” : “5”
+                       }
+
+                       “timestamp” : …
+               },
+               {
+                     …
+               }
+          ]
+     }
+     Cookie:
+     {
+          “accesstoken” : 
+          {    
+                “comment” : “jwt”
+                “domain” : “”
+                “httpOnly” : false
+                “maxAge” : 1678302907
+                “name” : “accesstoken”
+                “value” : “f45f43f.344ff.56g6yh”
+                …
+          }
+     }
+}
+
+7) узнать статус загруженности водителей
+
+Request:
+{
+     Get /driverstatus/economy
+     {
+           “Authorization” : “Bearer f45f43f.344ff.56g6yh”
+           “location” :  // местоположение может обновляться
+           {
+                “latitude” : 55.7504461 // широта
+                “longitude” : 37.6174943 // долгота
+                “height” : 155 // высота
+           }
+           “destination” : // необязательно указывать пункт назначения, если ранее указан
+           {
+                “latitude” : 59.938732
+                “longitude” : 30.316229
+                “height” : 14
+           }
+           “timestamp” : …
+     }
+}
+
+Response:
+{
+     200, 400, 500
+     {
+          “drivers” :
+          [
+               {
+                     “id” : …
+                      “photo” : “…”
+                      “name” : ashot
+                      “numberCar” : ао365
+                      “phone” : 89156458900 
+                      “description” “white kia rio, …”
+                      “rating” : “5”
+                      “arrivaltime” : 94
+                      “location” : 
+                      {
+                           “latitude” : 55.7504461 // широта
+                           “longitude” : 37.6174943 // долгота
+                           “height” : 155 // высота
+                      }
+               },
+               {
+                     …
+               }
+          ]
+     }
+     Cookie:
+     {
+          “accesstoken” : 
+          {    
+                “comment” : “jwt”
+                “domain” : “”
+                “httpOnly” : false
+                “maxAge” : 1678302907
+                “name” : “accesstoken”
+                “value” : “f45f43f.344ff.56g6yh”
+                …
+          }
+     }
+}
