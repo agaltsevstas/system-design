@@ -1,0 +1,5 @@
+# Amazon S3
+
+CREATE BUCKET photo(id, url)
+CREATE BUCKET audio(id, url)
+CREATE BUCKET video(id, url)
