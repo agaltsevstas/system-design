@@ -72,7 +72,6 @@ CREATE TABLE IF NOT EXISTS public.media
     user_id integer NOT NULL,
     type media_type NOT NULL,
     url character varying(128) COLLATE pg_catalog."default" NOT NULL,
-    description text COLLATE pg_catalog."default",
     "timestamp" timestamp with time zone NOT NULL,
     CONSTRAINT media_pkey PRIMARY KEY (id),
     CONSTRAINT user_pkey FOREIGN KEY (user_id)
@@ -191,7 +190,6 @@ CREATE TABLE IF NOT EXISTS public.post_audio
 CREATE TABLE IF NOT EXISTS public.post_cache
 (
     post_id integer NOT NULL,
-    hashtags_count integer,
     likes_count integer,
     views_count integer,
     comments_count integer,

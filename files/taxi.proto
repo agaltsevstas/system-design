@@ -117,10 +117,10 @@ message CreateTripRequest
 message CreateTripResponse
 {
     int64 trip_id = 1;
-    uint32 averagewaitingtime = 2;
+    uint32 average_waiting_time = 2;
     uint32 amount = 3;
     uint64 time = 4;
-    DriverResponse driver; = 5
+    DriverResponse driver = 5;
     Point driverLocation = 6;
 }
 
