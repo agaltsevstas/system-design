@@ -1,0 +1,182 @@
+// Домашнее задание 1 Спроектировать API для Яндекс Такси (gRPC)
+
+syntax = "proto3";
+package taxi;
+
+service taxi
+{
+    GetClient(ClientRequest) returns (ClientResponse) {}
+    GetDriver(DriverRequest) returns (DriverResponse) {}
+    UpdateClient(UpdateClientRequest) returns (google.protobuf.Empty) {}
+    UpdateDriver(UpdateDriverRequest) returns (google.protobuf.Empty) {}
+    CreateRoute(RouteRequest) returns (RouteResponse) {}
+    CreateTrip(CreateTripRequest) returns (CreateTripResponse) {}
+    CreateComment(CommentRequest) returns (google.protobuf.Empty) {}
+    GetTripsHistory(TripsHistoryRequest) returns (TripsHistoryResponse) {}
+    GetDriverStatus(DriverStatusRequest) returns (DriverStatusResponse) {}
+}
+
+// 1) посмотреть профиль клиента
+message ClientRequest
+{
+    int64 id = 1;
+}
+
+message ClientResponse
+{
+    int64 id = 1;
+    string username = 2;
+    uint phone = 3;
+    string mail = 4;
+    int32 raiting = 5;
+}
+
+// посмотреть профиль водителя
+message DriverRequest
+{
+    int64 id = 1;
+}
+
+message DriverResponse
+{
+    int64 id = 1;
+    bytes photo = 2;
+    string username = 3;
+    uint phone = 4;
+    string mail = 5;
+    int32 raiting = 6;
+    string numberCar = 7;
+    string description = 8;
+    raiting = 9;
+}
+
+// 2) изменить свои данные
+message UpdateClientRequest
+{
+    int64 id = 1;
+    string username = 2;
+    string password = 3;
+    uint64 timestamp = 4;
+}
+
+message UpdateDriverRequest
+{
+    int64 id = 1;
+    string username = 2;
+    string password = 3;
+    uint64 timestamp = 4;
+}
+
+// 3) рассчитать время и стоимость маршрута (со звездочкой еще и разные тарифы)
+message Point
+{
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message RouteRequest
+{
+    int64 id = 1;
+    Point location = 2;
+    Point destination = 3;
+    uint64 timestamp = 4;
+}
+
+enum TariffMode
+{
+    ECONOMY = 0;
+    BUSUNESS = 1;
+}
+
+message RouteResponse
+{
+    int64 id = 1;
+    TariffMode tariff = 2;
+    uint64 time = 3;
+    repeated Point = 4;
+}
+
+// 4) сделать заказ такси по выбранному маршруту (со звездочкой еще и разные пути)
+// После сформированного маршрута появилась кнопочка «заказать»
+enum PaymentType
+{
+  CASH = 0;
+  CARD = 1;
+}
+
+message CreateTripRequest
+{
+    int64 route_id = 1;
+    TariffMode tariff = 2;
+    uint32 bankcard = 3;
+    PaymentType payment = 4;
+    uint64 timestamp = 5;
+}
+
+message CreateTripResponse
+{
+    int64 trip_id = 1;
+    uint32 average_waiting_time = 2;
+    uint32 amount = 3;
+    uint64 time = 4;
+    DriverResponse driver = 5;
+    Point driverLocation = 6;
+}
+
+// 5) оставить отзыв о поездке
+message CommentRequest
+{
+    int64 id = 1;
+    string text = 2;
+    uint64 timestamp = 3;
+}
+
+// 6) посмотреть историю поездок c помощью пагинации начиная с 0, с интервалом 10
+message TripsHistoryRequest
+{
+    uint32 offset = 1;
+    int32 limit = 2;
+}
+
+message Trip
+{
+    uint64 id = 1;
+    uint32 amount = 2;
+    PaymentType payment = 3;
+    uint64 time = 4;
+    Point location = 5;
+    Point destination = 6;
+    repeated Point = 7;
+    DriverResponse driver = 8;
+    uint64 timestamp = 9;
+}
+
+message TripsHistoryResponse
+{
+    uint32 total = 1;
+    repeated Trip = 2;
+}
+
+// 7) узнать статус загруженности водителей c помощью пагинации начиная с 0, с интервалом 5
+message DriverStatusRequest
+{
+    uint32 offset = 1;
+    int32 limit = 2;
+    Point location = 3;
+    Point destination = 4;
+    uint64 timestamp = 5;
+}
+
+message DriverStatus
+{
+    uint64 id = 1;
+    int32 status = 2;
+    Point location = 3;
+}
+
+message DriverStatusResponse
+{
+    uint32 total = 1;
+    repeated DriverStatus = 2;
+}

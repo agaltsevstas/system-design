@@ -1,0 +1,49 @@
+MATCH (n) DETACH DELETE n
+
+# Relationships
+
+CREATE (user_1:User {id: 0, name: 'user_1'})
+CREATE (user_2:User {id: 1, name: 'user_2'})
+CREATE (user_3:User {id: 2, name: 'user_3'});
+
+MATCH (user_1:User), (user_2:User), (user_3:User)
+WHERE user_1.name = "user_1" AND user_2.name = "user_2" AND user_3.name = "user_3"
+CREATE (user_1)-[:FRIENDS]->(user_2)
+CREATE (user_1)-[:SUBSCRIBER]->(user_3)
+CREATE (user_2)-[:SUBSCRIBER]->(user_3);
+
+# Interests
+
+CREATE (music:Interest {name : 'music'})
+CREATE (sports:Interest {name : 'sports'})
+CREATE (dance:Interest {name : 'dance'});
+
+MATCH (user_1:User), (music:Interest)
+WHERE user_1.name = "user_1" AND music.name = "music"
+CREATE (user_1)-[:INTEREST]->(music);
+
+MATCH (user_2:User), (sports:Interest)
+WHERE user_2.name = "user_2" AND sports.name = "sports"
+CREATE (user_2)-[:INTEREST]->(sports);
+
+MATCH (user_3:User), (dance:Interest)
+WHERE user_3.name = "user_3" AND dance.name = "dance"
+CREATE (user_3)-[:INTEREST]->(dance);
+
+# Cities
+
+CREATE (Moscow:City {name : 'Moscow'})
+CREATE (Saint_Petersburg:City {name : 'Saint_Petersburg'})
+CREATE (Kazan:City {name : 'Kazan'});
+
+MATCH (user_1:User), (Moscow:City)
+WHERE user_1.name = "user_1" AND Moscow.name = "Moscow"
+CREATE (user_1)-[:FROM]->(Moscow);
+
+MATCH (user_2:User), (Saint_Petersburg:City)
+WHERE user_2.name = "user_2" AND Saint_Petersburg.name = "Saint_Petersburg"
+CREATE (user_2)-[:FROM]->(Saint_Petersburg);
+
+MATCH (user_3:User), (Kazan:City)
+WHERE user_3.name = "user_3" AND Kazan.name = "Kazan"
+CREATE (user_3)-[:FROM]->(Kazan);
