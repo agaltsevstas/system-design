@@ -5,15 +5,15 @@ package taxi;
 
 service taxi
 {
-    GetClient(ClientRequest) returns (ClientResponse) {}
-    GetDriver(DriverRequest) returns (DriverResponse) {}
-    UpdateClient(UpdateClientRequest) returns (google.protobuf.Empty) {}
-    UpdateDriver(UpdateDriverRequest) returns (google.protobuf.Empty) {}
-    CreateRoute(RouteRequest) returns (RouteResponse) {}
-    CreateTrip(CreateTripRequest) returns (CreateTripResponse) {}
-    CreateComment(CommentRequest) returns (google.protobuf.Empty) {}
-    GetTripsHistory(TripsHistoryRequest) returns (TripsHistoryResponse) {}
-    GetDriverStatus(DriverStatusRequest) returns (DriverStatusResponse) {}
+    rpc GetClient(ClientRequest) returns (ClientResponse) {}
+    rpc GetDriver(DriverRequest) returns (DriverResponse) {}
+    rpc UpdateClient(UpdateClientRequest) returns (google.protobuf.Empty) {}
+    rpc UpdateDriver(UpdateDriverRequest) returns (google.protobuf.Empty) {}
+    rpc CreateRoute(RouteRequest) returns (RouteResponse) {}
+    rpc CreateTrip(CreateTripRequest) returns (CreateTripResponse) {}
+    rpc CreateComment(CommentRequest) returns (google.protobuf.Empty) {}
+    rpc GetTripsHistory(TripsHistoryRequest) returns (TripsHistoryResponse) {}
+    rpc GetDriverStatus(DriverStatusRequest) returns (DriverStatusResponse) {}
 }
 
 // 1) посмотреть профиль клиента
@@ -47,7 +47,6 @@ message DriverResponse
     int32 raiting = 6;
     string numberCar = 7;
     string description = 8;
-    raiting = 9;
 }
 
 // 2) изменить свои данные
@@ -101,8 +100,8 @@ message RouteResponse
 // После сформированного маршрута появилась кнопочка «заказать»
 enum PaymentType
 {
-  CASH = 0;
-  CARD = 1;
+    CASH = 0;
+    CARD = 1;
 }
 
 message CreateTripRequest
